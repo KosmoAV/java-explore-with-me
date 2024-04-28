@@ -37,8 +37,7 @@ public class StatsServiceImpl implements StatsService {
         if (uris == null || uris.isEmpty()) {
             if (!unique) {
                 responseStatsDtos = statsRepository.findByDateTime(start, end);
-            }
-            else {
+            } else {
                 responseStatsDtos = statsRepository.findByDateTimeWithUniqueIp(start, end);
             }
         } else {
