@@ -1,0 +1,141 @@
+package ru.practicum.ewm.admin;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import ru.practicum.ewm.admin.dto.UpdateEventAdminRequest;
+import ru.practicum.ewm.categories.dto.CategoryDto;
+import ru.practicum.ewm.categories.dto.NewCategoryDto;
+import ru.practicum.ewm.categories.interfaces.CategoryService;
+import ru.practicum.ewm.compilations.dto.CompilationDto;
+import ru.practicum.ewm.admin.dto.NewCompilationDto;
+import ru.practicum.ewm.admin.dto.UpdateCompilationRequest;
+import ru.practicum.ewm.events.dto.EventFullDto;
+import ru.practicum.ewm.users.dto.NewUserRequest;
+import ru.practicum.ewm.users.dto.UserDto;
+import ru.practicum.ewm.users.interfaces.UserService;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static ru.practicum.ewm.Configuration.DATE_TIME_FORMAT;
+
+@Slf4j
+@RestController
+@RequestMapping(path = "/admin")
+@RequiredArgsConstructor
+@Validated
+public class AdminController {
+
+    private final CategoryService categoryService;
+    private final UserService userService;
+
+    @PostMapping(value = "/categories")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CategoryDto addCategory(@RequestBody @Validated NewCategoryDto newCategoryDto) {
+
+        log.info("Call 'addCategory': {}", newCategoryDto);
+
+        return categoryService.addCategory(newCategoryDto);
+    }
+
+    @DeleteMapping(value = "/categories/{catId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCategory(@PathVariable @Positive Long catId) {
+
+        log.info("Call 'deleteCategory': id = {}", catId);
+
+        categoryService.deleteCategory(catId);
+    }
+
+    @PatchMapping(value = "/categories/{catId}")
+    public CategoryDto updateCategory(@RequestBody @Validated CategoryDto categoryDto,
+                                      @PathVariable @Positive Long catId) {
+
+        log.info("Call 'updateCategory': {}, id = {}", categoryDto, catId);
+
+        return categoryService.updateCategory(categoryDto, catId);
+    }
+
+    @GetMapping(value = "/events")
+    public List<EventFullDto> getEvents(
+            @RequestParam @NotNull List<Long> users,
+            @RequestParam @NotNull List<String> states,
+            @RequestParam @NotNull List<Long> categories,
+            @RequestParam @DateTimeFormat(pattern = DATE_TIME_FORMAT) LocalDateTime rangeStart,
+            @RequestParam @DateTimeFormat(pattern = DATE_TIME_FORMAT) LocalDateTime rangeEnd,
+            @RequestParam(defaultValue = "0") @Min(0)Long from,
+            @RequestParam(defaultValue = "10") @Positive Long size) {
+
+        log.info("Call 'getEvents': {}, {}, {}, {}, {}, {}, {}", users, states, categories,
+                rangeStart, rangeEnd, from, size);
+
+        return null;
+    }
+
+    @PatchMapping(value = "/events/{eventId}")
+    public EventFullDto updateEvent(@RequestBody @Validated UpdateEventAdminRequest updateEventAdminRequest,
+                                    @PathVariable @Positive Long eventId) {
+
+        log.info("Call 'updateEvent': {}, {}", updateEventAdminRequest, eventId);
+
+        return null;
+    }
+
+    @GetMapping(value = "/users")
+    public List<UserDto> getUsers(@RequestParam(required = false) List<Long> ids,
+                                  @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                  @RequestParam(defaultValue = "10") @Positive Integer size) {
+
+        log.info("Call 'getUsers': ids = {}, from = {}, size = {}", ids, from, size);
+
+        return userService.getUsers(ids, from, size);
+    }
+
+    @PostMapping(value = "/users")
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserDto addUser(@RequestBody @Validated NewUserRequest newUserRequest) {
+
+        log.info("Call 'addUser': {}", newUserRequest);
+
+        return userService.addUser(newUserRequest);
+    }
+
+    @DeleteMapping(value = "/users/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(@Validated @PathVariable @Positive Long userId) {
+
+        log.info("Call 'deleteUser': userId = {}", userId);
+
+        userService.deleteUser(userId);
+    }
+
+    @PostMapping(value = "/compilations")
+    public CompilationDto addCompilation(@RequestBody @Validated NewCompilationDto newCompilationDto) {
+
+        log.info("Call 'addCompilation': {}", newCompilationDto);
+
+        return null;
+    }
+
+    @DeleteMapping(value = "/compilations/{compId}")
+    public void deleteCompilation(@PathVariable @Positive Long compId) {
+
+        log.info("Call 'deleteCompilation': {}", compId);
+    }
+
+    @PatchMapping(value = "/compilations/{compId}")
+    public CompilationDto updateCompilation(@RequestBody @Validated UpdateCompilationRequest updateCompilationRequest,
+                                            @PathVariable @Positive Long compId) {
+
+        log.info("Call 'updateCompilation': {}, {}", updateCompilationRequest, compId);
+
+        return null;
+    }
+}
