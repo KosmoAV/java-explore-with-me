@@ -36,6 +36,4 @@ public class CategoriesController {
 
         return categoryService.getCategory(catId);
     }
-
-
 }

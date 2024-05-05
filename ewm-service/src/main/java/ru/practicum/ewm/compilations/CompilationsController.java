@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.compilations.dto.CompilationDto;
+import ru.practicum.ewm.compilations.interfaces.CompilationRepository;
+import ru.practicum.ewm.compilations.interfaces.CompilationService;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Positive;
@@ -17,23 +19,23 @@ import java.util.List;
 @Validated
 public class CompilationsController {
 
+    private final CompilationService compilationService;
+
     @GetMapping
-    public List<CompilationDto> getCompilations(@RequestParam Boolean pinned,
-                                                @RequestParam(defaultValue = "0") @Min(0)Long from,
-                                                @RequestParam(defaultValue = "10") @Positive Long size) {
+    public List<CompilationDto> getCompilations(@RequestParam(required = false) Boolean pinned,
+                                                @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                                @RequestParam(defaultValue = "10") @Positive Integer size) {
 
-        log.info("Call 'getCompilations': {}, {}, {}", pinned, from, size);
+        log.info("Call 'getCompilations': pinned = {}, from = {}, size = {}", pinned, from, size);
 
-        return null;
+        return compilationService.getCompilations(pinned, from, size);
     }
 
     @GetMapping(value = "/{compId}")
     public CompilationDto getCompilation(@PathVariable @Positive Long compId) {
 
-        log.info("Call 'getCompilation': {}", compId);
+        log.info("Call 'getCompilation': compId = {}", compId);
 
-        return null;
+        return compilationService.getCompilation(compId);
     }
-
-
 }

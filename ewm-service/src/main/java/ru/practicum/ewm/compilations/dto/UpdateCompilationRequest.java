@@ -1,8 +1,7 @@
-package ru.practicum.ewm.admin.dto;
+package ru.practicum.ewm.compilations.dto;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Set;
 
@@ -13,7 +12,6 @@ public class UpdateCompilationRequest {
 
     private Boolean pinned;
 
-    @NotBlank
-    @Size(min = 2, max = 250)
+    @Size(min = 2, max = 50)
     private String title;
 }

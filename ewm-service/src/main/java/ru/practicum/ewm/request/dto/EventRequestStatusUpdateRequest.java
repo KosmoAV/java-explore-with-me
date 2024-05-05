@@ -1,8 +1,8 @@
-package ru.practicum.ewm.users.dto;
+package ru.practicum.ewm.request.dto;
 
 
 import lombok.Data;
-import ru.practicum.ewm.users.model.Status;
+import ru.practicum.ewm.request.model.Status;
 
 import java.util.List;
 
