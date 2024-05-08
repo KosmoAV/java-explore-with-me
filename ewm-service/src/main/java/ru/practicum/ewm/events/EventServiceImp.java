@@ -3,6 +3,8 @@ package ru.practicum.ewm.events;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.ewm.Configuration;
 import ru.practicum.ewm.categories.interfaces.CategoryRepository;
 import ru.practicum.ewm.categories.model.Category;
 import ru.practicum.ewm.events.dto.*;
@@ -10,6 +12,7 @@ import ru.practicum.ewm.events.interfaces.EventRepository;
 import ru.practicum.ewm.events.interfaces.EventService;
 import ru.practicum.ewm.events.model.Sort;
 import ru.practicum.ewm.events.model.State;
+import ru.practicum.ewm.exception.BadRequestException;
 import ru.practicum.ewm.exception.ConflictRequestException;
 import ru.practicum.ewm.exception.DataNotFoundRequestException;
 import ru.practicum.ewm.request.interfaces.RequestRepository;
@@ -19,9 +22,7 @@ import ru.practicum.ewm.users.model.User;
 import ru.practicum.ewm.events.model.Event;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,7 +38,7 @@ public class EventServiceImp implements EventService {
     public EventFullDto addEvent(NewEventDto newEventDto, Long userId) {
 
         if (newEventDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new ConflictRequestException("Event date cannot be earlier than two hours later");
+            throw new BadRequestException("Event date cannot be earlier than two hours later");
         }
 
         Category category = categoryRepository.findById(newEventDto.getCategory())
@@ -81,11 +82,29 @@ public class EventServiceImp implements EventService {
     }
 
     @Override
+    @Transactional
+    public EventFullDto getEvent(Long eventId, String remoteAddress) {
+
+        Event event = eventRepository.findByIdAndState(eventId, State.PUBLISHED)
+                .orElseThrow(() -> new DataNotFoundRequestException("Published event with id = " + eventId + " not found"));
+
+        if (!event.getIps().contains(remoteAddress)) {
+            event.getIps().add(remoteAddress);
+            event.setViews(event.getViews() + 1);
+
+            eventRepository.save(event);
+        }
+
+        Long confirmedRequests = requestRepository.getCountRequest(eventId, Status.CONFIRMED).orElse(0L);
+        return EventMapper.toEventFullDto(event, confirmedRequests);
+    }
+
+    @Override
     public EventFullDto updateEventByUser(UpdateEventUserRequest updateEventUserRequest, Long eventId, Long userId) {
 
         if (updateEventUserRequest.getEventDate() != null &&
                 updateEventUserRequest.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new ConflictRequestException("Event date cannot be earlier than two hours later");
+            throw new BadRequestException("Event date cannot be earlier than two hours later");
         }
 
         Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
@@ -113,6 +132,8 @@ public class EventServiceImp implements EventService {
 
         Map<Long, Long> confirmedRequests = getConfirmedRequests(events);
 
+        System.out.println(confirmedRequests);
+
         return events.stream()
                 .map(event -> EventMapper.toEventFullDto(event, confirmedRequests.get(event.getId())))
                 .collect(Collectors.toList());
@@ -139,7 +160,61 @@ public class EventServiceImp implements EventService {
 
         PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
 
-        return null;
+        List<Event> events;
+
+        if (rangeStart == null || rangeEnd == null) {
+            events = eventRepository.findByFilter(text.toLowerCase(), categories, paid,  State.PUBLISHED,
+                                                  page).getContent();
+        } else {
+
+            if (!rangeEnd.isAfter(rangeStart)) {
+                throw new BadRequestException("Range end must be after range start");
+            }
+
+            events = eventRepository.findByFilter(text.toLowerCase(), categories, paid,
+                                                  rangeStart, rangeEnd, State.PUBLISHED, page).getContent();
+        }
+
+        System.out.println("events = " + events);
+
+        if (events.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        Map<Long, Long> confirmedRequests = getConfirmedRequests(events);
+
+        if (onlyAvailable) {
+            events = events.stream()
+                    .filter(event -> event.getParticipantLimit() > confirmedRequests.get(event.getId()))
+                    .collect(Collectors.toList());
+
+            System.out.println("filter events = " + events);
+        }
+
+        if (sort != null) {
+            switch (sort) {
+                case VIEWS:
+                    events = events.stream()
+                            .sorted(Comparator.comparingLong(Event::getViews))
+                            .collect(Collectors.toList());
+                    break;
+                case EVENT_DATE:
+                    events = events.stream()
+                            .sorted(this::compareEventForDate)
+                            .collect(Collectors.toList());
+                    break;
+            }
+        }
+
+        System.out.println("Sort events = " + events);
+
+        return events.stream()
+                .map(event -> EventMapper.toEventShortDto(event, confirmedRequests.get(event.getId())))
+                .collect(Collectors.toList());
+    }
+
+    private int compareEventForDate(Event a, Event b) {
+        return a.getEventDate().compareTo(b.getEventDate());
     }
 
     private Event changeEventByUser(Event event, UpdateEventUserRequest newEvent) {
@@ -217,6 +292,11 @@ public class EventServiceImp implements EventService {
         }
 
         if (newEvent.getEventDate() != null) {
+
+            if (!newEvent.getEventDate().isAfter(LocalDateTime.now())) {
+                throw new BadRequestException("Event date must be in future");
+            }
+
             event.setEventDate(newEvent.getEventDate());
         }
 

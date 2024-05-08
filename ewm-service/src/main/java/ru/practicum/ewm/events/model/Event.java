@@ -6,6 +6,7 @@ import ru.practicum.ewm.users.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "events", schema = "public")
@@ -63,4 +64,9 @@ public class Event {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User initiator;
+
+    @ElementCollection
+    @CollectionTable(name="events_data", joinColumns=@JoinColumn(name="event_id"))
+    @Column(name = "ip")
+    private Set<String> ips;
 }

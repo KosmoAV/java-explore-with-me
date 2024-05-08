@@ -10,4 +10,9 @@ public class UpdateEventUserRequest extends BaseUpdateEventRequest {
 
         return stateAction;
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + "[stateAction=" + stateAction + "]";
+    }
 }

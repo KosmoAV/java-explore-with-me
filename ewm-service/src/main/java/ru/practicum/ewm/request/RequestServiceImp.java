@@ -2,6 +2,7 @@ package ru.practicum.ewm.request;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.events.interfaces.EventRepository;
 import ru.practicum.ewm.events.model.Event;
 import ru.practicum.ewm.events.model.State;
@@ -51,7 +52,7 @@ public class RequestServiceImp implements RequestService {
         request.setRequester(userId);
         request.setCreated(LocalDateTime.now());
 
-        if (event.getRequestModeration()) {
+        if (event.getRequestModeration() && event.getParticipantLimit() != 0) {
             request.setStatus(Status.PENDING);
         } else {
             request.setStatus(Status.CONFIRMED);
@@ -96,6 +97,7 @@ public class RequestServiceImp implements RequestService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public EventRequestStatusUpdateResult updateRequestsByOwner(EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest,
                                                                 Long eventId, Long userId) {
@@ -145,6 +147,8 @@ public class RequestServiceImp implements RequestService {
                 }
             }
         }
+
+        requests = requestRepository.saveAll(requests);
 
         List<Request> confirmedRequests = requests.stream()
                 .filter(request -> request.getStatus() == Status.CONFIRMED)

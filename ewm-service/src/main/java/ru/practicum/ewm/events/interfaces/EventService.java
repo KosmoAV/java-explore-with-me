@@ -16,6 +16,8 @@ public interface EventService {
 
     public EventFullDto getEvent(Long eventId, Long userId);
 
+    public EventFullDto getEvent(Long eventId, String remoteAddress);
+
     public EventFullDto updateEventByUser(UpdateEventUserRequest updateEventUserRequest, Long eventId, Long userId);
 
     public List<EventFullDto> getEventsAdminByFilter(List<Long> users, List<State> states, List<Long> categories,
