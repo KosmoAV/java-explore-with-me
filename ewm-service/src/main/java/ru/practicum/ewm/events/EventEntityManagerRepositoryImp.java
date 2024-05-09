@@ -89,7 +89,7 @@ public class EventEntityManagerRepositoryImp implements EventEntityManagerReposi
         query.setFirstResult(page.getPageNumber() * page.getPageSize());
         query.setMaxResults(page.getPageSize());
 
-        List <Event> events = query.getResultList();
+        List<Event> events = query.getResultList();
 
         long totalCount = events.size() < page.getPageSize() ? page.getPageSize() : entityManager
                 .createQuery("SELECT COUNT(e) FROM Event AS e", Long.class)
