@@ -3,6 +3,7 @@ package ru.practicum.ewm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.dto.RequestStatsDto;
@@ -22,6 +23,7 @@ public class StatsController {
     private final StatsService statsService;
 
     @PostMapping(value = "/hit")
+    @ResponseStatus(HttpStatus.CREATED)
     public void addRequest(@Validated @RequestBody RequestStatsDto requestStatsDto, HttpServletRequest request) {
 
         log.info("Call 'addRequest': {}", requestStatsDto);
