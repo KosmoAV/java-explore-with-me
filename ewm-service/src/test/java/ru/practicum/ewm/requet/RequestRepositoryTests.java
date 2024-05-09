@@ -15,10 +15,7 @@ import ru.practicum.ewm.users.model.User;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -50,10 +47,10 @@ public class RequestRepositoryTests {
         events.add(createDefaultEvent("3", "Хочу есть", State.PENDING));
 
         requests.add(createDefaultRequest(events.get(0), Status.PENDING, users.get(0)));
-        requests.add(createDefaultRequest(events.get(0), Status.PENDING, users.get(1)));
+        requests.add(createDefaultRequest(events.get(0), Status.CONFIRMED, users.get(1)));
         requests.add(createDefaultRequest(events.get(0), Status.PENDING, users.get(2)));
 
-        requests.add(createDefaultRequest(events.get(1), Status.CANCELED, users.get(0)));
+        requests.add(createDefaultRequest(events.get(1), Status.CONFIRMED, users.get(0)));
         requests.add(createDefaultRequest(events.get(1), Status.CANCELED, users.get(1)));
 
         requests.add(createDefaultRequest(events.get(2), Status.CANCELED, users.get(0)));
@@ -66,24 +63,17 @@ public class RequestRepositoryTests {
     @Test
     void getCountRequestTest() throws Exception {
 
-
-
         List<Long> ids = List.of(events.get(0).getId(), events.get(1).getId(), events.get(2).getId());
         List<List<Long>> count = requestRepository.getCountRequest(ids, Status.CONFIRMED);
 
-        System.out.println(count.stream().collect(Collectors.toMap(list -> list.get(0), list -> list.get(1))));
-/*
         assertEquals(1, count.get(0).get(0), "Wrong event id");
-        assertEquals(3, count.get(0).get(1), "Wrong count requests");
+        assertEquals(1, count.get(0).get(1), "Wrong count requests");
 
         assertEquals(2, count.get(1).get(0), "Wrong event id");
-        assertEquals(2, count.get(1).get(1), "Wrong count requests");
+        assertEquals(1, count.get(1).get(1), "Wrong count requests");
 
         assertEquals(3, count.get(2).get(0), "Wrong event id");
         assertEquals(2, count.get(2).get(1), "Wrong count requests");
- */
-
-
     }
 
     private Event createDefaultEvent(String title, String annotation, State state) {

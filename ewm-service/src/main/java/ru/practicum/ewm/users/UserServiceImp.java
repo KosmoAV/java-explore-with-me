@@ -29,7 +29,7 @@ public class UserServiceImp implements UserService {
     @Override
     public List<UserDto> getUsers(List<Long> ids, Integer from, Integer size) {
 
-        if(ids == null || ids.isEmpty()) {
+        if (ids == null || ids.isEmpty()) {
 
             PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
 

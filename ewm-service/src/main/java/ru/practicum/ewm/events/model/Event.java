@@ -66,7 +66,7 @@ public class Event {
     private User initiator;
 
     @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name="events_data", joinColumns=@JoinColumn(name="event_id"))
+    @CollectionTable(name = "events_data", joinColumns = @JoinColumn(name = "event_id"))
     @Column(name = "ip")
     private Set<String> ips;
 }

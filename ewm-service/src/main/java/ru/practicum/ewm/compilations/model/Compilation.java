@@ -21,7 +21,7 @@ public class Compilation {
     private Boolean pinned;
 
     @ElementCollection
-    @CollectionTable(name="compilations_data", joinColumns=@JoinColumn(name="compilation_id"))
+    @CollectionTable(name = "compilations_data", joinColumns = @JoinColumn(name = "compilation_id"))
     @Column(name = "event_id")
     private List<Long> events;
 }

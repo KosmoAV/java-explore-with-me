@@ -142,7 +142,8 @@ public class CompilationServiceImp implements CompilationService {
                     .map(eventMap::get)
                     .map(event -> EventMapper.toEventShortDto(event, confirmedRequestsMap.get(event.getId())))
                     .collect(Collectors.toList());
-                return CompilationMapper.toCompilationDto(compilation, eventShortDtoList);})
+                return CompilationMapper.toCompilationDto(compilation, eventShortDtoList);
+            })
             .collect(Collectors.toList());
     }
 

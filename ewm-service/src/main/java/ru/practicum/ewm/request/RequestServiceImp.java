@@ -87,7 +87,7 @@ public class RequestServiceImp implements RequestService {
     @Override
     public List<ParticipationRequestDto> getRequests(Long eventId, Long userId) {
 
-        if(!eventRepository.existsByIdAndInitiatorId(eventId, userId)) {
+        if (!eventRepository.existsByIdAndInitiatorId(eventId, userId)) {
             throw new DataNotFoundRequestException("Event with id = " + eventId + " and Initiator with id = " +
                     userId + " not found");
         }
