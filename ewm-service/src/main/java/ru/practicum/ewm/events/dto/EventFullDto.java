@@ -6,8 +6,6 @@ import ru.practicum.ewm.events.model.Location;
 import ru.practicum.ewm.events.model.State;
 import ru.practicum.ewm.users.dto.UserShortDto;
 
-import java.time.LocalDateTime;
-
 @Data
 public class EventFullDto {
 

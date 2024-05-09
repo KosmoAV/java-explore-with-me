@@ -3,7 +3,7 @@ package ru.practicum.ewm.compilations;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import ru.practicum.ewm.admin.dto.NewCompilationDto;
+import ru.practicum.ewm.compilations.dto.NewCompilationDto;
 import ru.practicum.ewm.compilations.dto.CompilationDto;
 import ru.practicum.ewm.compilations.dto.UpdateCompilationRequest;
 import ru.practicum.ewm.compilations.interfaces.CompilationRepository;

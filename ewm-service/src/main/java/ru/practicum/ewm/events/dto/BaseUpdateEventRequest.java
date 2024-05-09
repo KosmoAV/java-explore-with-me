@@ -3,10 +3,8 @@ package ru.practicum.ewm.events.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import ru.practicum.ewm.events.model.Location;
-import ru.practicum.ewm.events.model.UserStateAction;
 
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 

@@ -1,6 +1,6 @@
 package ru.practicum.ewm.compilations.interfaces;
 
-import ru.practicum.ewm.admin.dto.NewCompilationDto;
+import ru.practicum.ewm.compilations.dto.NewCompilationDto;
 import ru.practicum.ewm.compilations.dto.CompilationDto;
 import ru.practicum.ewm.compilations.dto.UpdateCompilationRequest;
 

@@ -1,6 +1,6 @@
 package ru.practicum.ewm.compilations;
 
-import ru.practicum.ewm.admin.dto.NewCompilationDto;
+import ru.practicum.ewm.compilations.dto.NewCompilationDto;
 import ru.practicum.ewm.compilations.dto.CompilationDto;
 import ru.practicum.ewm.compilations.model.Compilation;
 import ru.practicum.ewm.events.dto.EventShortDto;

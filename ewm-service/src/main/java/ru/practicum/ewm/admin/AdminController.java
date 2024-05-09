@@ -12,7 +12,7 @@ import ru.practicum.ewm.categories.dto.CategoryDto;
 import ru.practicum.ewm.categories.dto.NewCategoryDto;
 import ru.practicum.ewm.categories.interfaces.CategoryService;
 import ru.practicum.ewm.compilations.dto.CompilationDto;
-import ru.practicum.ewm.admin.dto.NewCompilationDto;
+import ru.practicum.ewm.compilations.dto.NewCompilationDto;
 import ru.practicum.ewm.compilations.dto.UpdateCompilationRequest;
 import ru.practicum.ewm.events.dto.EventFullDto;
 import ru.practicum.ewm.events.interfaces.EventService;
@@ -22,7 +22,6 @@ import ru.practicum.ewm.users.dto.UserDto;
 import ru.practicum.ewm.users.interfaces.UserService;
 
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -70,11 +69,11 @@ public class AdminController {
 
     @GetMapping(value = "/events")
     public List<EventFullDto> getEventsByFilter(
-            @RequestParam @NotNull List<Long> users,
-            @RequestParam @NotNull List<State> states,
-            @RequestParam @NotNull List<Long> categories,
-            @RequestParam @DateTimeFormat(pattern = DATE_TIME_FORMAT) LocalDateTime rangeStart,
-            @RequestParam @DateTimeFormat(pattern = DATE_TIME_FORMAT) LocalDateTime rangeEnd,
+            @RequestParam(required = false) List<Long> users,
+            @RequestParam(required = false) List<State> states,
+            @RequestParam(required = false) List<Long> categories,
+            @RequestParam(required = false) @DateTimeFormat(pattern = DATE_TIME_FORMAT) LocalDateTime rangeStart,
+            @RequestParam(required = false) @DateTimeFormat(pattern = DATE_TIME_FORMAT) LocalDateTime rangeEnd,
             @RequestParam(defaultValue = "0") @Min(0) Integer from,
             @RequestParam(defaultValue = "10") @Positive Integer size) {
 

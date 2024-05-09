@@ -13,7 +13,6 @@ import ru.practicum.ewm.events.model.Sort;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.time.LocalDateTime;
@@ -32,9 +31,9 @@ public class EventsController {
 
     @GetMapping
     public List<EventShortDto> getEvents(
-            @RequestParam @NotNull @NotBlank String text,
+            @RequestParam(required = false) String text,
             @RequestParam @NotNull List<Long> categories,
-            @RequestParam @NotNull Boolean paid,
+            @RequestParam(required = false) Boolean paid,
             @RequestParam(required = false) @DateTimeFormat(pattern = DATE_TIME_FORMAT) LocalDateTime rangeStart,
             @RequestParam(required = false) @DateTimeFormat(pattern = DATE_TIME_FORMAT) LocalDateTime rangeEnd,
             @RequestParam(defaultValue = "false") Boolean onlyAvailable,

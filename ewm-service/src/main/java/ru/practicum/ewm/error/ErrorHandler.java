@@ -1,8 +1,6 @@
 package ru.practicum.ewm.error;
 
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;

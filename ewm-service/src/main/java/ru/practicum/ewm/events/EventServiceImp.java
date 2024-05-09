@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.ewm.Configuration;
 import ru.practicum.ewm.categories.interfaces.CategoryRepository;
 import ru.practicum.ewm.categories.model.Category;
 import ru.practicum.ewm.events.dto.*;
@@ -128,11 +127,31 @@ public class EventServiceImp implements EventService {
 
         PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
 
-        List<Event> events = eventRepository.findByFilter(users, states, categories, rangeStart, rangeEnd, page).getContent();
+        if (states == null) {
+            states = List.of(State.PENDING, State.CANCELED, State.PUBLISHED);
+        }
+
+        if (rangeStart == null) {
+            rangeStart = LocalDateTime.now().minusYears(1000);
+        }
+
+        if (rangeEnd == null) {
+            rangeEnd = LocalDateTime.now().plusYears(1000);
+        }
+
+        List<Event> events;
+
+        if (users == null && categories == null) {
+            events = eventRepository.findByFilterWithoutAll(states, rangeStart, rangeEnd, page).getContent();
+        } else if (users == null) {
+            events = eventRepository.findByFilterWithoutUsers(states, categories, rangeStart, rangeEnd, page).getContent();
+        } else if (categories == null) {
+            events = eventRepository.findByFilterWithoutCategories(users, states, rangeStart, rangeEnd, page).getContent();
+        } else {
+            events = eventRepository.findByFilter(users, states, categories, rangeStart, rangeEnd, page).getContent();
+        }
 
         Map<Long, Long> confirmedRequests = getConfirmedRequests(events);
-
-        System.out.println(confirmedRequests);
 
         return events.stream()
                 .map(event -> EventMapper.toEventFullDto(event, confirmedRequests.get(event.getId())))
@@ -160,22 +179,33 @@ public class EventServiceImp implements EventService {
 
         PageRequest page = PageRequest.of(from > 0 ? from / size : 0, size);
 
-        List<Event> events;
-
-        if (rangeStart == null || rangeEnd == null) {
-            events = eventRepository.findByFilter(text.toLowerCase(), categories, paid,  State.PUBLISHED,
-                                                  page).getContent();
-        } else {
-
-            if (!rangeEnd.isAfter(rangeStart)) {
-                throw new BadRequestException("Range end must be after range start");
-            }
-
-            events = eventRepository.findByFilter(text.toLowerCase(), categories, paid,
-                                                  rangeStart, rangeEnd, State.PUBLISHED, page).getContent();
+        if (rangeStart == null) {
+            rangeStart = LocalDateTime.now().minusYears(1000);
         }
 
-        System.out.println("events = " + events);
+        if (rangeEnd == null) {
+            rangeEnd = LocalDateTime.now().plusYears(1000);
+        }
+
+        if (!rangeEnd.isAfter(rangeStart)) {
+            throw new BadRequestException("Range end must be after range start");
+        }
+
+        List<Event> events;
+
+        if (text == null && paid == null) {
+            events = eventRepository.findByFilterWithoutAll(categories,
+                    rangeStart, rangeEnd, State.PUBLISHED, page).getContent();
+        } else if (text == null) {
+            events = eventRepository.findByFilterWithoutText(categories, paid,
+                    rangeStart, rangeEnd, State.PUBLISHED, page).getContent();
+        } else if (paid == null) {
+            events = eventRepository.findByFilterWithoutPaid(text.toLowerCase(), categories,
+                    rangeStart, rangeEnd, State.PUBLISHED, page).getContent();
+        } else {
+            events = eventRepository.findByFilter(text.toLowerCase(), categories, paid,
+                    rangeStart, rangeEnd, State.PUBLISHED, page).getContent();
+        }
 
         if (events.isEmpty()) {
             return new ArrayList<>();

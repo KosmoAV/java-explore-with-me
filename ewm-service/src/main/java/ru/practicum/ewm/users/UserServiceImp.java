@@ -3,7 +3,6 @@ package ru.practicum.ewm.users;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import ru.practicum.ewm.categories.CategoryMapper;
 import ru.practicum.ewm.users.dto.NewUserRequest;
 import ru.practicum.ewm.users.dto.UserDto;
 import ru.practicum.ewm.users.interfaces.UserRepository;

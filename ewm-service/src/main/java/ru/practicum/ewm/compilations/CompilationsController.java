@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.compilations.dto.CompilationDto;
-import ru.practicum.ewm.compilations.interfaces.CompilationRepository;
 import ru.practicum.ewm.compilations.interfaces.CompilationService;
 
 import javax.validation.constraints.Min;

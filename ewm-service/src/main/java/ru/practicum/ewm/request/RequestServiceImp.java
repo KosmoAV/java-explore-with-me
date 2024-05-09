@@ -106,6 +106,15 @@ public class RequestServiceImp implements RequestService {
                 .orElseThrow(() -> new DataNotFoundRequestException("Event with id = " + eventId +
                                                 " and Initiator with id = " + userId + " not found"));
 
+        int confirmedRequest = requestRepository.getCountRequest(eventId, Status.CONFIRMED)
+                .orElse(0L).intValue();
+
+        if (eventRequestStatusUpdateRequest.getStatus() == Status.CONFIRMED) {
+            if (confirmedRequest >= event.getParticipantLimit()) {
+                throw new ConflictRequestException("The limit of approved applications has already been reached");
+            }
+        }
+
         List<Request> requests = requestRepository.findAllById(eventRequestStatusUpdateRequest.getRequestIds());
 
         if (requests.size() != eventRequestStatusUpdateRequest.getRequestIds().size()) {
@@ -126,9 +135,6 @@ public class RequestServiceImp implements RequestService {
                     }
                 } else {
 
-                    int confirmedRequest = requestRepository.getCountRequest(eventId, Status.CONFIRMED)
-                            .orElse(0L).intValue();
-
                     for (Request request : requests) {
                         if (confirmedRequest < participantLimit && request.getStatus() == Status.PENDING) {
                             request.setStatus(Status.CONFIRMED);
@@ -143,6 +149,9 @@ public class RequestServiceImp implements RequestService {
                 for (Request request : requests) {
                     if (request.getStatus() == Status.PENDING) {
                         request.setStatus(Status.REJECTED);
+                    } else if (request.getStatus() == Status.CONFIRMED) {
+                        throw new ConflictRequestException("Request with id = " + request.getId() +
+                                " already has been confirmed");
                     }
                 }
             }
