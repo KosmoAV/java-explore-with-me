@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.categories.interfaces.CategoryRepository;
 import ru.practicum.ewm.categories.model.Category;
 import ru.practicum.ewm.events.dto.*;
+import ru.practicum.ewm.events.interfaces.EventEntityManagerRepository;
 import ru.practicum.ewm.events.interfaces.EventRepository;
 import ru.practicum.ewm.events.interfaces.EventService;
 import ru.practicum.ewm.events.model.Sort;
@@ -32,6 +33,7 @@ public class EventServiceImp implements EventService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final RequestRepository requestRepository;
+    private final EventEntityManagerRepository eventEntityManagerRepository;
 
     @Override
     public EventFullDto addEvent(NewEventDto newEventDto, Long userId) {
@@ -191,21 +193,12 @@ public class EventServiceImp implements EventService {
             throw new BadRequestException("Range end must be after range start");
         }
 
-        List<Event> events;
-
-        if (text == null && paid == null) {
-            events = eventRepository.findByFilterWithoutAll(categories,
-                    rangeStart, rangeEnd, State.PUBLISHED, page).getContent();
-        } else if (text == null) {
-            events = eventRepository.findByFilterWithoutText(categories, paid,
-                    rangeStart, rangeEnd, State.PUBLISHED, page).getContent();
-        } else if (paid == null) {
-            events = eventRepository.findByFilterWithoutPaid(text.toLowerCase(), categories,
-                    rangeStart, rangeEnd, State.PUBLISHED, page).getContent();
-        } else {
-            events = eventRepository.findByFilter(text.toLowerCase(), categories, paid,
-                    rangeStart, rangeEnd, State.PUBLISHED, page).getContent();
+        if (text != null) {
+            text = text.toLowerCase();
         }
+
+        List<Event> events = eventEntityManagerRepository.findByFilterAndPublished(text, categories,
+                paid, rangeStart, rangeEnd, page).getContent();
 
         if (events.isEmpty()) {
             return new ArrayList<>();
@@ -235,8 +228,6 @@ public class EventServiceImp implements EventService {
                     break;
             }
         }
-
-        System.out.println("Sort events = " + events);
 
         return events.stream()
                 .map(event -> EventMapper.toEventShortDto(event, confirmedRequests.get(event.getId())))
