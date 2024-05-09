@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.ewm.Configuration;
+import ru.practicum.ewm.StatsClient;
 import ru.practicum.ewm.events.dto.EventFullDto;
 import ru.practicum.ewm.events.dto.EventShortDto;
 import ru.practicum.ewm.events.interfaces.EventService;
@@ -28,6 +28,7 @@ import static ru.practicum.ewm.Configuration.DATE_TIME_FORMAT;
 public class EventsController {
 
     private final EventService eventService;
+    private final StatsClient statsClient;
 
     @GetMapping
     public List<EventShortDto> getEvents(
@@ -46,7 +47,7 @@ public class EventsController {
                         "onlyAvailable = {}, sort = {}, from = {}, size = {}",
                         text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
 
-        Configuration.statsClient.sendStats("ewm", request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now());
+        statsClient.sendStats("ewm", request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now());
 
         return eventService.getEventsByFilter(text, categories, paid, rangeStart, rangeEnd,
                                               onlyAvailable, sort, from, size);
@@ -57,7 +58,7 @@ public class EventsController {
 
         log.info("Call 'getEvent': id = {}", id);
 
-        Configuration.statsClient.sendStats("ewm", request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now());
+        statsClient.sendStats("ewm", request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now());
 
         return eventService.getEvent(id, request.getRemoteAddr());
     }
