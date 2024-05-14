@@ -5,6 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.ewm.comments.dto.CommentDto;
+import ru.practicum.ewm.comments.dto.NewCommentDto;
+import ru.practicum.ewm.comments.dto.UpdateCommentDto;
+import ru.practicum.ewm.comments.interfaces.CommentService;
 import ru.practicum.ewm.events.dto.EventShortDto;
 import ru.practicum.ewm.events.dto.*;
 import ru.practicum.ewm.events.interfaces.EventService;
@@ -26,6 +30,7 @@ public class UsersController {
 
     private final EventService eventService;
     private final RequestService requestService;
+    private final CommentService commentService;
 
     @GetMapping(value = "/{userId}/events")
     public List<EventShortDto> getEvents(@PathVariable @Positive Long userId,
@@ -112,5 +117,43 @@ public class UsersController {
         log.info("Call 'cancelRequest': userId = {}, requestId = {}", userId, requestId);
 
         return requestService.cancelRequest(userId, requestId);
+    }
+
+    @PostMapping(value = "/{userId}/comments")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CommentDto addComment(@RequestBody @Validated NewCommentDto newCommentDto,
+                                 @PathVariable @Positive Long userId) {
+
+        log.info("Call 'addComment': {}, userId = {}", newCommentDto, userId);
+
+        return commentService.addComment(newCommentDto, userId);
+    }
+
+    @GetMapping(value = "/{userId}/comments")
+    public List<CommentDto> getComments(@PathVariable @Positive Long userId) {
+
+        log.info("Call 'getComments': userId = {}", userId);
+
+        return commentService.getCommentsByCommentator(userId);
+    }
+
+    @PatchMapping(value = "/{userId}/comments/{commentId}")
+    public CommentDto updateComment(@RequestBody @Validated UpdateCommentDto updateCommentDto,
+                                    @PathVariable @Positive Long userId,
+                                    @PathVariable @Positive Long commentId) {
+
+        log.info("Call 'updateComment': {}, userId = {}, commentId = {}", updateCommentDto, userId, commentId);
+
+        return commentService.updateComment(updateCommentDto, userId, commentId);
+    }
+
+    @DeleteMapping(value = "/{userId}/comments/{commentId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteComment(@PathVariable @Positive Long userId,
+                                    @PathVariable @Positive Long commentId) {
+
+        log.info("Call 'deleteComment': userId = {}, commentId = {}", userId, commentId);
+
+        commentService.deleteComment(userId, commentId);
     }
 }

@@ -6,6 +6,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.StatsClient;
+import ru.practicum.ewm.comments.dto.CommentDto;
+import ru.practicum.ewm.comments.interfaces.CommentService;
+import ru.practicum.ewm.comments.model.CommentSort;
 import ru.practicum.ewm.events.dto.EventFullDto;
 import ru.practicum.ewm.events.dto.EventShortDto;
 import ru.practicum.ewm.events.interfaces.EventService;
@@ -27,6 +30,7 @@ import static ru.practicum.ewm.Configuration.DATE_TIME_FORMAT;
 public class EventsController {
 
     private final EventService eventService;
+    private final CommentService commentService;
     private final StatsClient statsClient;
 
     @GetMapping
@@ -60,5 +64,16 @@ public class EventsController {
         statsClient.sendStats("ewm", request.getRequestURI(), request.getRemoteAddr(), LocalDateTime.now());
 
         return eventService.getEvent(id, request.getRemoteAddr());
+    }
+
+    @GetMapping(value = "/{id}/comments")
+    public List<CommentDto> getComments(@PathVariable @Positive Long id,
+                                        @RequestParam(defaultValue = "ASCENDING_DATE") CommentSort sort,
+                                        @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                        @RequestParam(defaultValue = "10") @Positive Integer size) {
+
+        log.info("Call 'getComments': id = {}, sort = {}, from = {}, size = {}", id, sort, from, size);
+
+        return commentService.getCommentsByEvent(id, sort, from, size);
     }
 }

@@ -49,37 +49,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     public Boolean existsByCategoryId(Long catId);
 
+    public Boolean existsByIdAndState(Long eventId, State state);
+
     public Optional<Event> findByIdAndState(Long eventId, State state);
-
-    @Query(value =
-            "SELECT e FROM Event AS e WHERE LOWER(e.annotation) LIKE CONCAT('%', :text, '%') " +
-            "OR LOWER(e.description) LIKE CONCAT('%', :text, '%') AND e.category.id IN (:categories) " +
-            "AND e.paid = :paid AND e.eventDate >= :rangeStart AND e.eventDate < :rangeEnd AND e.state = :state")
-    public Page<Event> findByFilter(String text, List<Long> categories, Boolean paid,
-                                    LocalDateTime rangeStart, LocalDateTime rangeEnd,
-                                    State state, PageRequest page);
-
-    @Query(value =
-            "SELECT e FROM Event AS e WHERE " +
-            "e.category.id IN (:categories) " +
-            "AND e.paid = :paid AND e.eventDate >= :rangeStart AND e.eventDate < :rangeEnd AND e.state = :state")
-    public Page<Event> findByFilterWithoutText(List<Long> categories, Boolean paid,
-                                    LocalDateTime rangeStart, LocalDateTime rangeEnd,
-                                    State state, PageRequest page);
-
-    @Query(value =
-            "SELECT e FROM Event AS e WHERE LOWER(e.annotation) LIKE CONCAT('%', :text, '%') " +
-            "OR LOWER(e.description) LIKE CONCAT('%', :text, '%') AND e.category.id IN (:categories) " +
-            "AND e.eventDate >= :rangeStart AND e.eventDate < :rangeEnd AND e.state = :state")
-    public Page<Event> findByFilterWithoutPaid(String text, List<Long> categories,
-                                    LocalDateTime rangeStart, LocalDateTime rangeEnd,
-                                    State state, PageRequest page);
-
-    @Query(value =
-            "SELECT e FROM Event AS e WHERE " +
-                    "e.category.id IN (:categories) " +
-                    "AND e.eventDate >= :rangeStart AND e.eventDate < :rangeEnd AND e.state = :state")
-    public Page<Event> findByFilterWithoutAll(List<Long> categories,
-                                    LocalDateTime rangeStart, LocalDateTime rangeEnd,
-                                    State state, PageRequest page);
 }
