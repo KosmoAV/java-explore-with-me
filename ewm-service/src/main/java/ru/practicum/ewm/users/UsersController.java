@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.comments.dto.CommentDto;
 import ru.practicum.ewm.comments.dto.NewCommentDto;
 import ru.practicum.ewm.comments.dto.UpdateCommentDto;
-import ru.practicum.ewm.comments.interfaces.CommentRepository;
 import ru.practicum.ewm.comments.interfaces.CommentService;
 import ru.practicum.ewm.events.dto.EventShortDto;
 import ru.practicum.ewm.events.dto.*;

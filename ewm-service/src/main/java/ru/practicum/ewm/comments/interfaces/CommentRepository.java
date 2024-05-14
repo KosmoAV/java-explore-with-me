@@ -18,5 +18,5 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query(value = "SELECT c FROM Comment AS c WHERE c.event = :eventId ORDER BY c.createdOn DESC")
     Page<Comment> findByEventOrderByCreatedOnDesc(Long eventId, PageRequest page);
 
-    Boolean existsByIdAndCommentator(Long commentId, Long UserId);
+    Boolean existsByIdAndCommentator(Long commentId, Long userId);
 }
