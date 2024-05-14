@@ -6,6 +6,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.ewm.comments.dto.CommentDto;
+import ru.practicum.ewm.comments.dto.UpdateCommentDto;
+import ru.practicum.ewm.comments.interfaces.CommentService;
 import ru.practicum.ewm.compilations.interfaces.CompilationService;
 import ru.practicum.ewm.events.dto.UpdateEventAdminRequest;
 import ru.practicum.ewm.categories.dto.CategoryDto;
@@ -39,6 +42,7 @@ public class AdminController {
     private final UserService userService;
     private final EventService eventService;
     private final CompilationService compilationService;
+    private final CommentService commentService;
 
     @PostMapping(value = "/categories")
     @ResponseStatus(HttpStatus.CREATED)
@@ -146,5 +150,23 @@ public class AdminController {
         log.info("Call 'updateCompilation': {}, compId = {}", updateCompilationRequest, compId);
 
         return compilationService.updateCompilation(updateCompilationRequest, compId);
+    }
+
+    @PatchMapping(value = "/comments/{commentId}")
+    public CommentDto updateComment(@RequestBody @Validated UpdateCommentDto updateCommentDto,
+                                    @PathVariable @Positive Long commentId) {
+
+        log.info("Call 'updateComment': {}, commentId = {}", updateCommentDto, commentId);
+
+        return commentService.updateCommentByAdmin(updateCommentDto, commentId);
+    }
+
+    @DeleteMapping(value = "/comments/{commentId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteComment(@PathVariable @Positive Long commentId) {
+
+        log.info("Call 'deleteComment': commentId = {}", commentId);
+
+        commentService.deleteCommentByAdmin(commentId);
     }
 }

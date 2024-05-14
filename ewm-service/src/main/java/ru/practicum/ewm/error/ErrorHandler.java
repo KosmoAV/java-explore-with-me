@@ -30,13 +30,13 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handle(final IllegalArgumentException exception) {
 
         log.info("Get IllegalArgumentException: {}", exception.getMessage());
 
         return new ApiError(List.of("IllegalArgumentException"), exception.getMessage(),
-                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), HttpStatus.INTERNAL_SERVER_ERROR.toString());
+                HttpStatus.BAD_REQUEST.getReasonPhrase(), HttpStatus.BAD_REQUEST.toString());
     }
 
     @ExceptionHandler
